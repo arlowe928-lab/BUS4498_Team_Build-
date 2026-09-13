@@ -11,13 +11,11 @@
 
 ### Team Name
 
-[Enter your team name.]
+The PROS 
 
 ### Team Members
-
-- [Team member 1 full name]
-- [Team member 2 full name]
-
+Michael Hong 
+Ethan Arlow
 
 ### System Name
 
