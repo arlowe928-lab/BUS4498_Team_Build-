@@ -14,7 +14,7 @@
 The PROS 
 
 ### Team Members
-Michael Hong 
+Michael Hong &
 Ethan Arlow
 
 ### System Name
