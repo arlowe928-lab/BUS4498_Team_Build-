@@ -3,7 +3,9 @@
 
 **BUS 4498 Team Build**
 
-> **Problem to be solved**: [Please briefly describe the business or organization problem your system aims to solve. Make sure to point out a rough baseline (e.g., attend-to-registration rate at 40% in our hackathon scenario) in your problem statement.]
+> **Problem to be solved**: Employees at the Transportation and Parking Center often need to find someone to cover their shifts, but relying on a group chat can make it difficult to keep track of who needs coverage, which shifts are still open, and who has agreed to take them. Important messages can get buried in the conversation, leading to confusion and missed shifts. Managers also have to manually keep track of coverage requests and updates.
+
+This project aims to create a web app that uses AI to identify shift coverage requests from employee group chats and automatically add them to a shared dashboard. Employees can then view available shifts, claim shifts they can work, and see updated coverage information in one place. This would make the shift coverage process more organized, reduce communication issues, and save managers time.
 
 *Replace every bracketed prompt below with your team's information. Delete this instruction and any unused placeholder text before committing the completed charter.*
 
@@ -18,12 +20,11 @@ Michael Hong &
 Ethan Arlow
 
 ### System Name
-
-[Enter the name your team has chosen for the system.]
+ShiftSpace
 
 ### System Goal
-[Read Chapter 2 Section 2.1, then enter the well-structured goal of your agentic system]
+For employees and managers, make shift coverage more organized and efficient, measured by the percentage of coverage requests successfully filled, moving from the current baseline of 50% to 90%, without allowing employees to claim shifts they are not eligible or scheduled to cover.
 
 ### Who Is Better Off When This Works?
 
-[In one complete sentence, identify who will be better off when the system works.]
+Employees and managers will be better off because shift coverage will be easier to request, find, and track.
