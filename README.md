@@ -7,7 +7,6 @@
 
 This project aims to create a web app that uses AI to identify shift coverage requests from employee group chats and automatically add them to a shared dashboard. Employees can then view available shifts, claim shifts they can work, and see updated coverage information in one place. This would make the shift coverage process more organized, reduce communication issues, and save managers time.
 
-*Replace every bracketed prompt below with your team's information. Delete this instruction and any unused placeholder text before committing the completed charter.*
 
 ## Team Charter
 
