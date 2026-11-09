@@ -2,45 +2,63 @@
 
 ## 1. Workflow Goal
 
-This workflow supports the goal in our completed [team charter](https://github.com/arlowe928-lab/BUS4498_Team_Build-/blob/main/README.md). The workflow coordinates Sort Shift Coverage Information , Check Message Format, Move information to Database , Move information from database to dashboard . Its intended result is: A visual dashboard of shifts needing to be covered.
+This workflow supports the goal in our completed [team charter](https://github.com/arlowe928-lab/BUS4498_Team_Build-/blob/main/README.md). The workflow coordinates Sort Shift Coverage Information, Check Message Format, Move Information to Database, Move Information from Database to Dashboard, and Claim a Shift. Its intended result is: every coverage request posted in the team chat shows up as an open shift on the ShiftSpace dashboard, and an eligible employee claims it.
 
 ## 2. Workflow Trigger
 
-Employee types "Copilot: I need a shift covered: date (xx/xx/xxxx), shift time (xx:xx(am/pm)-xx:xx(am/pm)), reason for coverage (school, sick, family or other)"
+An employee posts in the Microsoft Teams group chat: "Copilot: I need a shift covered: date (MM/DD/YYYY), shift time (hh:mm am/pm - hh:mm am/pm), reason for coverage (school, personal, family, or other)"
 
 ## 3. Completion Condition at Runtime
 
-A visual dashboard of shifts needing to be covered.
+The shift is marked claimed on the ShiftSpace dashboard, and the requesting employee and the Manager are notified in Teams.
 
 ## 4. General Workflow
 
-The workflow starts when an employee types "Copilot: I need a shift covered: date (xx/xx/xxxx), shift time (xx:xx(am/pm)-xx:xx(am/pm)), reason for coverage (school, sick, family or other)".
+The workflow starts when an employee posts a coverage request in the Microsoft Teams group chat that begins with "Copilot:".
 
-T1 · Sort Shift Coverage Information: Copilot reads the sent messages and pulls the employee’s first name and last initial, shift date, shift time, and reason for coverage (school, sick, family, or other).
+T1 · Sort Shift Coverage Information: Copilot reads the message and pulls the employee's first name and last initial, shift date, shift time, and reason for coverage (school, personal, family, or other). It converts the date to YYYY-MM-DD.
 
-T1 routes to D1 · Message Correctly Formatted? If the message is correctly formatted, D1 routes to T3 · Move information to Database, where Copilot moves the correctly formatted data to a PostgreSQL database. T3 routes to T4 · Move information from the database to the dashboard, where Copilot threads the information from the database to a calendar dashboard for employees to view. T4 routes to END · Complete workflow, resulting in a visual dashboard of shifts needing to be covered.
+T1 routes to T2 · Check Message Format, where ShiftSpace checks every field against the format rules.
 
-If the message is not correctly formatted, D1 routes to STOP1 · Formatting Error. Copilot returns a message asking the employee to format the shift date, shift time, and reason for coverage accordingly and try again; STOP1 returns to D1.
+T2 routes to D1 · Message Correctly Formatted?
 
-Exception handling is not yet specified in the task specifications.
+- If yes, D1 routes to T3 · Move Information to Database, where ShiftSpace saves the request to the `shift_requests` table in our Supabase (PostgreSQL) database with the status "open." T3 routes to T4 · Move Information from Database to Dashboard, where the shift appears on the dashboard page in the ShiftSpace app.
+- If no, D1 routes to STOP1 · Formatting Error. ShiftSpace replies in the Teams chat with the correct format and what was missing. This run ends. When the employee resends the request, a new run starts at T1.
 
-## 5. Workflow Diagram
+T4 routes to T5 · Claim a Shift. An employee signs in to the dashboard and clicks Claim on an open shift. D2 · Employee Eligible? checks the eligibility rules in the T5 specification.
+
+- If yes, ShiftSpace marks the shift claimed and notifies the requesting employee and the Manager in Teams. The workflow routes to END · Complete Workflow.
+- If no, D2 routes to STOP2 · Not Eligible. The dashboard tells the employee why they can't claim the shift, and the shift stays open for others.
+
+## 5. Exception Handling
+
+- If any task fails after its retries, ShiftSpace flags the record and notifies the Manager in Teams. No task retries forever or skips ahead.
+- If a shift is still open 24 hours before it starts, ShiftSpace notifies the Manager in Teams so they can find coverage.
+- Only the Manager can edit or remove a shift record.
+
+## 6. Workflow Diagram
 
 ```mermaid
 flowchart TD
-    START(["Call Copilot "])
-    T1["T1: Sort Shift Coverage Information "]
+    START(["Employee posts 'Copilot:' request in Teams"])
+    T1["T1: Sort Shift Coverage Information"]
     T2["T2: Check Message Format"]
-    D1{"Message Correctly Formatted? "}
-    T3["T3: Move information to Database "]
-    T4["T4: Move information from database to dashboard "]
-    END(["Complete workflow"])
-    STOP1(["Formatting Error "])
+    D1{"Message Correctly Formatted?"}
+    T3["T3: Move Information to Database"]
+    T4["T4: Move Information from Database to Dashboard"]
+    T5["T5: Claim a Shift"]
+    D2{"Employee Eligible?"}
+    END(["Complete Workflow: shift claimed"])
+    STOP1(["Formatting Error: reply sent, employee resends"])
+    STOP2(["Not Eligible: shift stays open"])
     START --> T1
     T1 --> T2
     T2 --> D1
     D1 -->|"Yes"| T3
     D1 -->|"No"| STOP1
     T3 --> T4
-    T4 --> END
+    T4 --> T5
+    T5 --> D2
+    D2 -->|"Yes"| END
+    D2 -->|"No"| STOP2
 ```

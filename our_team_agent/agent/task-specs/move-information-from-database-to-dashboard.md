@@ -1,46 +1,46 @@
-# Move information from database to dashboard Task Specification
+# Move Information from Database to Dashboard Task Specification
 
 ## Basic Information
 
 - **Task ID:** T4
-- **Task name:** Move information from database to dashboard
+- **Task name:** Move Information from Database to Dashboard
 - **Task type:** Act
 - **Task owner:** Manager
 
 ## 1. Task Description
 
-Copilot will thread the information from the database to calendar dashboard for employees to view [dashboard software will be defined later].
+ShiftSpace shows each open shift on the dashboard page in our own app, in a calendar view, so employees can see which shifts need coverage. The coverage reason is not shown to employees; only the Manager can see it.
 
 ## 2. Inputs
 
 ### Input 1
 
 - **Input name:** Stored Shift Coverage Record
-- **Contents and format:** Database record containing unique shift ID, employee first name, last initial, shift date, shift time range, coverage reason category, and insertion timestamp.
-- **Source:** T3 Move information to Database
+- **Contents and format:** Database record containing shift ID, employee first name, last initial, shift date, start and end time, coverage reason, status, and created timestamp.
+- **Source:** T3 Move Information to Database
 
-- **If a required input is missing or invalid:** Log synchronization failure, notify Shift Supervisor, and halt dashboard update for the affected record.
+- **If a required input is missing or invalid:** Log the failure, notify the Manager in Teams, and leave the record off the dashboard until it is fixed.
 
 ## 3. Outputs
 
 ### Output 1
 
-- **Output name:** Published Calendar Dashboard Event
-- **Contents and format:** Synchronized calendar entry containing shift date, shift time window, employee first name, employee last initial, and open-shift coverage status tag.
-- **Next task or recipient:** Employee Calendar Dashboard
-- **Complete when:** Calendar dashboard displays the scheduled event
+- **Output name:** Open Shift on Dashboard
+- **Contents and format:** Calendar entry on the ShiftSpace dashboard page showing shift date, start and end time, the requesting employee's first name and last initial, an "Open" status tag, and a Claim button.
+- **Next task or recipient:** T5 Claim a Shift (employees viewing the dashboard)
+- **Complete when:** The dashboard displays the shift as open.
 
 ## 4. Planned Tools
 
 ### Tool 1
 
-- **Tool name:** [Complete this field]
-- **Input:** [Complete this field]
-- **Output:** [Complete this field]
-- **Implementation Route:** [Complete this field]
-- **Integration approach:** [Complete this field]
-- **Role in this task:** [Complete this field]
-- **Task timeout:** [Complete this field]
-- **Maximum retries:** [Complete this field]
-- **Retry only when:** [Complete this field]
-- **On timeout, exhausted retries, or an error that cannot be retried:** [Complete this field]
+- **Tool name:** Dashboard Page
+- **Input:** Rows in `shift_requests` with status "open"
+- **Output:** Calendar view of open shifts
+- **Implementation Route:** A page in the ShiftSpace web app that reads from our Supabase database
+- **Integration approach:** Signed-in employees only; reads through Supabase with row-level rules so employees never see the coverage reason
+- **Role in this task:** Displays open shifts and updates when a shift is added or claimed
+- **Task timeout:** 10 seconds to load
+- **Maximum retries:** 2
+- **Retry only when:** The database read times out
+- **On timeout, exhausted retries, or an error that cannot be retried:** Show an error message on the page and notify the Manager in Teams
